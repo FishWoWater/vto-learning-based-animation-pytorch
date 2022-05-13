@@ -24,11 +24,11 @@ parser.add_argument('--learn_post_disp', action='store_true')
 parser.add_argument('--loose_only', action='store_true')
 args = parser.parse_args()
 
-checkpoint_dir = osp.join("checkpoints", args.exp_id)
-os.makedirs(checkpoint_dir, exist_ok=True)
 device = "cuda:0"
 vis_interval = 50
-vis_savedir = "vis/"
+checkpoint_dir = osp.join("checkpoints", args.exp_id)
+os.makedirs(checkpoint_dir, exist_ok=True)
+vis_savedir = osp.join("vis", args.exp_id)
 os.makedirs(vis_savedir, exist_ok=True)
 draped_cloth_path = args.cloth_path.replace('.obj', '_draped.obj')
 clothv, clothf = load_obj(draped_cloth_path)
@@ -130,10 +130,7 @@ val_wrinkle_loader = DataLoader(val_wrinkle_dataset, batch_size=bs, shuffle=Fals
 smpl_model = SMPLTorchModel(device, "assets/SMPL/SMPL_FEMALE.pkl")
 clothv = torch.from_numpy(clothv).type(torch.float64).to(device)
 closest_indices = query_closest_vertices(smpl_model.v_template.cpu().numpy(), clothv.cpu().numpy())
-print(closest_indices)
 cloth_skinweights = smpl_model.weights[closest_indices]
-print(cloth_skinweights)
-exit(0)
 cloth_shapedirs = smpl_model.shapedirs[closest_indices]
 cloth_posedirs = smpl_model.posedirs[closest_indices]
 use_tbptt = False
